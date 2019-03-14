@@ -17,5 +17,7 @@
     "url": "https://github.com/demortc/FOpera/issues"
   },
   "homepage": "https://github.com/demortc/FOpera#readme",
-  "dependencies": {}
+  "dependencies": {
+    "python-struct": "^1.0.6"
+  }
 }

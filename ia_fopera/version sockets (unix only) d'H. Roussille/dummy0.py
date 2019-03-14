@@ -1,8 +1,8 @@
 import socket
 import messages
 import protocol
-from random import randrange
 import time
+from random import randrange
 
 host = "localhost"
 port = 15555
@@ -13,15 +13,15 @@ class Player():
 
         self.end = False;
         self.old_question = ""
-        self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-
+        self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.handlers = {
-            "Information" : self.handle_informations ,
-            "Question": self.handle_questions
-        }
+                          "Information" : self.handle_informations ,
+                          "Question": self.handle_questions
+                        }
 
     def connect(self):
-        self.socket.connect((host, port))
+        self.socket.connect("./server")
 
     def reset(self):
         self.socket.close()
@@ -55,4 +55,5 @@ class Player():
 p = Player();
 
 p.run()
+
 

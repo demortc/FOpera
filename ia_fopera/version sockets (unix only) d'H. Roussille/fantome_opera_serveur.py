@@ -5,9 +5,9 @@ import socket
 import protocol
 import messages
 
-link = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+link = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
 # link.setsockopt(socket.IPPROTO_TCP, socket.SO_REUSEADDR, 1)
-link.bind(('', 15555))
+link.bind("./server")
 
 latence = 0.01
 permanents, deux, avant, apres = {'rose'}, {'rouge','gris','bleu'}, {'violet','marron'}, {'noir','blanc'}
@@ -26,11 +26,9 @@ def informer(texte):
 
 def demander(q,j):
     informer("QUESTION : "+ q)
-    print("QUESTION : " + q)
     protocol.send_one_message(clients[j.numero], messages.Question(q).toJson())
     r = protocol.recv_one_message(clients[j.numero])
     r = messages.deserialize(r)
-    print("REPONSE DONNEE : " + str(r.content))
     informer("REPONSE DONNEE : " + str(r.content))
     return str(r.content)
 

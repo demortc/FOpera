@@ -1,38 +1,34 @@
 from random import shuffle,randrange
 from time import sleep
 from threading import Thread
-import socket
-import protocol
-import messages
+import dummy0, dummy1
 
-link = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-# link.setsockopt(socket.IPPROTO_TCP, socket.SO_REUSEADDR, 1)
-link.bind(('', 15555))
-
-latence = 0.01
+latence = 0.001
 permanents, deux, avant, apres = {'rose'}, {'rouge','gris','bleu'}, {'violet','marron'}, {'noir','blanc'}
 couleurs = avant | permanents | apres | deux
 passages = [{1,4},{0,2},{1,3},{2,7},{0,5,8},{4,6},{5,7},{3,6,9},{4,9},{7,8}]
 pass_ext = [{1,4},{0,2,5,7},{1,3,6},{2,7},{0,5,8,9},{4,6,1,8},{5,7,2,9},{3,6,9,1},{4,9,5},{7,8,4,6}]
 
-clients = []
-
 def message(texte,jos):
     for j in jos:
-        protocol.send_one_message(clients[j.numero], messages.Information(texte).toJson())
+        f = open("./"+str(j.numero)+"/infos.txt","a")
+        f.write(texte + "\n")
+        f.close()
 
 def informer(texte):
     message(texte,joueurs)
 
 def demander(q,j):
-    informer("QUESTION : "+ q)
-    print("QUESTION : " + q)
-    protocol.send_one_message(clients[j.numero], messages.Question(q).toJson())
-    r = protocol.recv_one_message(clients[j.numero])
-    r = messages.deserialize(r)
-    print("REPONSE DONNEE : " + str(r.content))
-    informer("REPONSE DONNEE : " + str(r.content))
-    return str(r.content)
+    informer("QUESTION : "+q)
+    f = open("./"+str(j.numero)+"/questions"+".txt","w")
+    f.write(q)
+    f.close()
+    sleep(latence)
+    f = open("./"+str(j.numero)+"/reponses"+".txt","r")
+    r = f.read()
+    f.close()
+    informer("REPONSE DONNEE : "+r)
+    return r
 
 class personnage:
     def __init__(self,couleur):
@@ -127,11 +123,8 @@ class joueur:
 class partie:
     def __init__(self,joueurs):
         for i in [0,1]:
-            f = open("./" + str(i) + "/infos.txt","w")
-            f.close()
-            f = open("./" + str(i) + "/questions.txt","w")
-            f.close()
-            f = open("./" + str(i) + "/reponses.txt","w")
+            f = open("./"+str(i)+"/infos"+".txt","w")
+            f.write("")
             f.close()
         self.joueurs = joueurs
         self.start, self.end, self.num_tour, self.shadow, x = 4, 22, 1, randrange(10), randrange(10)
@@ -140,7 +133,7 @@ class partie:
         self.tuiles = [p for p in self.personnages]
         self.cartes = self.tuiles[:]
         self.fantome = self.cartes[randrange(8)]
-        message("!!! Le fantôme est : "+self.fantome.couleur,[self.joueurs[1]])
+        message("!!! Le fantôme est : "+self.fantome.couleur,[self.joueurs[0]])
         self.cartes.remove(self.fantome)
         self.cartes += ['fantome']*3
         
@@ -186,27 +179,19 @@ class partie:
             self.tour()
         informer("L'enquêteur a trouvé - c'était " + str(self.fantome) if self.start < self.end else "Le fantôme a gagné")
         informer("Score final : "+str(self.end-self.start))
-        return self.end - self.start
+        return self.end-self.start
     def __repr__(self):
         return "Tour:" + str(self.num_tour) + ", Score:"+str(self.start)+"/"+str(self.end) + ", Ombre:" + str(self.shadow) + ", Bloque:" + str(self.bloque) +"\n" + "  ".join([str(p) for p in self.personnages])
 
+score = []
 joueurs = [joueur(0),joueur(1)]
-scores = []
-
-def init_connexion():
-    while len(clients) != 2:
-        link.listen(2)
-        (clientsocket, addr) = link.accept()
-        print("Received client !")
-        clients.append(clientsocket)
-        clientsocket.settimeout(500)
-
-init_connexion()
-
-for i in range(1000):
-    scores.append(partie(joueurs).lancer())
-    print("partie : " + str(i))
-
-w0 = [win for win in scores if win <= 0]
-
-print ("winrate : " + str(len(w0) / len(scores) * 100))
+nbparties = 20
+for i in range(nbparties):
+    t1,t2 = Thread(target=dummy0.lancer), Thread(target=dummy1.lancer)
+    t1.start()
+    t2.start()
+    score.append(partie(joueurs).lancer())
+    t1.join()
+    t2.join()
+victoires = [x for x in score if x<=0]
+print("Efficacité : "+str(len(victoires)/nbparties*100)+"%")

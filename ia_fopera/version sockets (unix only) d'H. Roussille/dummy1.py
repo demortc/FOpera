@@ -13,7 +13,7 @@ class Player():
 
         self.end = False;
         self.old_question = ""
-        self.socket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.socket = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
         self.handlers = {
             "Information" : self.handle_informations ,
@@ -21,7 +21,7 @@ class Player():
         }
 
     def connect(self):
-        self.socket.connect((host, port))
+        self.socket.connect("./server")
 
     def reset(self):
         self.socket.close()

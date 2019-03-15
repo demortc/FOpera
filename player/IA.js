@@ -19,25 +19,30 @@ class IA {
       let index = 0;
       let elements = [];
 
-      while (index < data.length) {
-        const length = data.readUInt32BE(index);
+      while (index + 4 < data.length) {
+        const length = data.readInt32BE(index);
 
-        console.log("index=" + this.player + "=" + index);
-        console.log("lenght=" + this.player + "=" + length);
+        index += 4;
 
-        const sub = data.toString("ascii", index + 4, length + 4);
+        const sub = data.toString("ascii", index, length + index);
 
-        if (!sub || sub.length === 0) {
+        if (!sub || sub.length < 2) {
+          index = index + sub.length;
           break;
         }
 
-        console.log(this.player + "=" + sub);
-        elements.push(sub);
-        index += length + 4;
-      }
-      //console.log(decode.replace('@', '').split(/[^ -~]+/g));
-      // PARSE THE DECODE RESPONSE HERE
+        index += length;
 
+        elements.push(JSON.parse(sub));
+      }
+
+      elements.forEach((elem) => {
+        if (elem.type === "Question") {
+          console.log(" ????? ")
+        }
+
+        console.log(elem.content);
+      })
     })  
   }
 
@@ -45,6 +50,10 @@ class IA {
     const response = JSON.stringify({type: 'Response', content: str});
     this.client.write(struct.pack('!I', response.length));
     this.client.write(response, 'ascii');
+  }
+
+  revcall(buff, count) {
+
   }
 
 }

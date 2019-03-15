@@ -25,17 +25,31 @@ const Color = {
 
 class Character {
   constructor(_color, _position, _suspect) {
-    this.color = _color;
-    this.position = _position;
-    this.suspect = _suspect;
+    this._color = _color;
+    this._position = _position;
+    this._suspect = _suspect;
+  }
+
+  static get Color() {
+    return {
+      RED:0,
+      PINK:1,
+      GREY:2,
+      BLUE:3,
+      PURPLE:4,
+      BROWN:5,
+      BLACK:6,
+      WHITE:7,
+      NONE:8,
+    }
   }
 
   dump() {
-    console.log(" ", this.color,", position: ",this.position,", suspect: ", this.suspect)
+    console.log(" ", this._color,", position: ",this._position,", suspect: ", this._suspect)
   }
 
   get_character_color_to_string() {
-    return CharactersString[this.color];
+    return CharactersString[this._color];
   }
 
   convert_from_tile_color(tileColor) {

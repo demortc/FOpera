@@ -11,7 +11,7 @@ const CharactersString = [
   "blanc",
 ]
 
-const Color = {
+export const Color = {
   RED:0,
   PINK:1,
   GREY:2,

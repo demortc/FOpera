@@ -70,5 +70,3 @@ class Character {
 };
 
 module.exports.Character = Character;
-
-console.log(Character.Color['0'])

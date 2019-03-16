@@ -41,7 +41,9 @@ class Tree {
   }
 
   getActualPos() {
-    return this._actual.characters[this._actual.playedCharacter.value].position;
+    if (this._actual.playedCharacter) {
+      return this._actual.characters[this._actual.playedCharacter].position;
+    }
   }
 
   getChilds() {
@@ -66,7 +68,7 @@ class Tree {
   }
 
   goToBestChild(allowedColors) {
-    let bestChild = undefined;
+    let bestChild = new Node();
     for (let child of this._actual.child) {
       if (allowedColors.includes(child.playedCharacter)) {
         if (bestChild === undefined || child.heuristic > bestChild.heuristic) {

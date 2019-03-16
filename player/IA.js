@@ -46,6 +46,7 @@ class IA {
       }
 
       elements.forEach((elem) => {
+        console.log(elem.content);
         this.parser.parseData(elem.content);
       })
     })  

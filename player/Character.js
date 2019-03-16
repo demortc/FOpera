@@ -9,19 +9,21 @@ const CharactersString = [
   "marron",
   "noir",
   "blanc",
-]
+];
 
-export const Color = {
-  RED:0,
-  PINK:1,
-  GREY:2,
-  BLUE:3,
-  PURPLE:4,
-  BROWN:5,
-  BLACK:6,
-  WHITE:7,
-  NONE:8,
-}
+module.exports.CharactersString = CharactersString;
+
+// const Color = {
+//   RED:0,
+//   PINK:1,
+//   GREY:2,
+//   BLUE:3,
+//   PURPLE:4,
+//   BROWN:5,
+//   BLACK:6,
+//   WHITE:7,
+//   NONE:8,
+// }
 
 class Character {
   constructor(_color, _position, _suspect) {
@@ -67,4 +69,6 @@ class Character {
   }
 };
 
-module.exports = Character;
+module.exports.Character = Character;
+
+console.log(Character.Color['0'])

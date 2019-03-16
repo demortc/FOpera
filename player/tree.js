@@ -1,14 +1,14 @@
 const { Node, PlayLevelId } = require('./node');
 const character = require('./Character');
 
-export class Tree {
+class Tree {
   constructor() {
-    this.root = Node();
+    this.root = new Node();
     this._actual = this.root;
     this.root.playLevel = PlayLevelId.GHOST;
   }
 
-  initiateRoot = (characters, lock, light) => {
+  initiateRoot(characters, lock, light) {
     this.root.setCharacter(characters);
     this.root.setLock(lock);
     this.root.depth = 0;
@@ -16,15 +16,17 @@ export class Tree {
     this.root.playLevel = PlayLevelId.GHOST;
   }
 
-  parent = () => {
+  parent() {
     if (this._actual !== this.root) {
       this._actual = this._actual.parent
     }
   }
 
-  generate = () => this._actual.generateDirectChildPower(0, 0);
+  generate () {
+    return this._actual.generateDirectChildPower(0, 0);
+  }
 
-  generateDeeper = () => {
+  generateDeeper() {
     if (this._actual.child === undefined || this._actual.child.length === 0) {
       this.generate();
     } else {
@@ -34,19 +36,27 @@ export class Tree {
     }
   }
 
-  getActual = () => this._actual;
-
-  getActualPos = () => this._actual.characters[this._actual.playedCharacter.value].position;
-
-  getChilds = () => this._actual.child;
-
-  getTurn = () => this._actual.playLevel;
-
-  goToChild = () => {
-    this._actual = child;
+  getActual() {
+    return this._actual;
   }
 
-  goToAdverseMove = (characterMoved) => {
+  getActualPos() {
+    return this._actual.characters[this._actual.playedCharacter.value].position;
+  }
+
+  getChilds() {
+    return this._actual.child;
+  }
+
+  getTurn() {
+    return this._actual.playLevel;
+  }
+
+  goToChild() {
+    return this._actual = child;
+  }
+
+  goToAdverseMove(characterMoved) {
     for (let child of this._actual.child) {
       if (child.characters[characterMoved.color.value].position === characterMoved.position) {
         this._actual = child;
@@ -55,7 +65,7 @@ export class Tree {
     }
   }
 
-  goToBestChild = (allowedColors) => {
+  goToBestChild(allowedColors) {
     let bestChild = undefined;
     for (let child of this._actual.child) {
       if (allowedColors.includes(child.playedCharacter)) {
@@ -68,7 +78,7 @@ export class Tree {
     return allowedColors.indexOf(this._actual.playedCharacter);
   }
 
-  getGenerateDepth = () => {
+  getGenerateDepth() {
     let tmp = this._actual;
     let depth = 0;
     while (tmp.child.length > 0) {
@@ -79,7 +89,7 @@ export class Tree {
     return depth;
   }
 
-  print = (layer) => {
+  print(layer) {
     if (layer === undefined) {
       layer = this._actual;
     }
@@ -89,15 +99,15 @@ export class Tree {
     }
   }
 
-  updateSuspectWorld = (characters) => {
+  updateSuspectWorld(characters) {
     this.updateNode(this._actual, characters, this._actual.lock, this._actual.lightOff);
   }
 
-  updateWorldInfo = (lock, light) => {
+  updateWorldInfo(lock, light) {
     this.updateNode(this._actual, this._actual.characters, lock, light);
   }
 
-  updateNode = (targetNode, characters, lock, light) => {
+  updateNode(targetNode, characters, lock, light) {
     if (targetNode === undefined) {
       return null;
     }
@@ -119,3 +129,6 @@ export class Tree {
     }
   }
 }
+
+module.exports = Tree;
+

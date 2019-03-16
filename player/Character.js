@@ -32,7 +32,7 @@ class Character {
     this._suspect = _suspect;
   }
 
-  static get Color() {
+  static Color() {
     return {
       RED:0,
       PINK:1,

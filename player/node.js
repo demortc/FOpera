@@ -1,20 +1,22 @@
-import Board from "./board";
-import * as Character from '../player/Character';
-import { Color } from './Character';
+const { Board } = require("./board");
+const { Character } = require('../player/Character');
+const { Color } = require('./Character');
 
-class PlayLevelId {
-  static GHOST = 0;
-  static INSPECTOR = 1;
-  static INSPECTOR2 = 2;
-  static GHOST2 = 3;
-  static INSPECTOR3 = 4;
-  static GHOST3 = 5;
-  static GHOST4 = 6;
-  static INSPECTOR4 = 7;
+const PlayLevelId  = {
+  GHOST: 0,
+  INSPECTOR: 1,
+  INSPECTOR2: 2,
+  GHOST2: 3,
+  INSPECTOR3: 4,
+  GHOST3: 5,
+  GHOST4: 6,
+  INSPECTOR4: 7
 }
 
+module.exports.PlayLevelId = PlayLevelId;
+
 class PlayLevel {
-  static getNextMove = (level) => {
+  static getNextMove(level) {
     const roles = [
       PlayLevelId.GHOST,
       PlayLevelId.INSPECTOR,
@@ -35,7 +37,7 @@ class PlayLevel {
     return roles[levelIndex + 1];
   }
 
-  static isGhostTurn = (level) => {
+  static isGhostTurn(level) {
     if ([PlayLevelId.INSPECTOR, PlayLevelId.INSPECTOR2, PlayLevelId.INSPECTOR3, PlayLevelId.INSPECTOR4].includes(level)) {
       return true;
     }
@@ -43,7 +45,7 @@ class PlayLevel {
     return false;
   }
 
-  static isInspectorTurn = (level) => {
+  static isInspectorTurn(level) {
     if ([PlayLevelId.GHOST, PlayLevelId.GHOST2, PlayLevelId.GHOST3, PlayLevelId.GHOST4].includes(level)) {
       return true;
     }
@@ -51,7 +53,7 @@ class PlayLevel {
     return false;
   }
 
-  static isAdverseMove = (jid, level) => {
+  static isAdverseMove(jid, level) {
     if ((jid === 0 && PlayLevel.isGhostTurn(level)) || (jid === 1 && PlayLevel.isInspectorTurn(level))) {
       return true;
     }
@@ -60,24 +62,27 @@ class PlayLevel {
   }
 }
 
-export class Node {
+module.exports.PlayLevel = PlayLevel;
+
+
+class Node {
 
   constructor() {
     this.depth = 0;
     this.playLevel = undefined;
     this.playedCharacter = undefined;
-    this.ghostColor = character.Color.NONE;
+    this.ghostColor = Character.Color().NONE;
     this.parent = undefined;
     this.child = [];
     this.characters = [
-      new character.Character(character.Color.RED, 0, true),
-      new character.Character(character.Color.PINK, 0, true),
-      new character.Character(character.Color.GREY, 0, true),
-      new character.Character(character.Color.BLUE, 0, true),
-      new character.Character(character.Color.PURPLE, 0, true),
-      new character.Character(character.Color.BROWN, 0, true),
-      new character.Character(character.Color.BLACK, 0, true),
-      new character.Character(character.Color.WHITE, 0, true)
+      new Character(Character.Color().RED, 0, true),
+      new Character(Character.Color().PINK, 0, true),
+      new Character(Character.Color().GREY, 0, true),
+      new Character(Character.Color().BLUE, 0, true),
+      new Character(Character.Color().PURPLE, 0, true),
+      new Character(Character.Color().BROWN, 0, true),
+      new Character(Character.Color().BLACK, 0, true),
+      new Character(Character.Color().WHITE, 0, true)
     ]
     this.lock = [0, 1];
     this.lightOff = 0;
@@ -85,7 +90,7 @@ export class Node {
     this.heuristic = undefined;
   }
 
-  moveCharacter = (to_move, new_position) => {
+  moveCharacter(to_move, new_position) {
     const path = Board.path;
     const path_pink = Board.path;
 
@@ -95,7 +100,7 @@ export class Node {
       return false;
     }
 
-    if (to_move === character.Color.PINK) {
+    if (to_move === character.Character.Color().PINK) {
       if (path_pink[this.characters[to_move.value].position].includes(new_position)) {
         this.characters[to_move.value].position = new_position;
         return true;
@@ -112,7 +117,7 @@ export class Node {
     }
   }
 
-  dump = () => {
+  dump() {
     console.log("Characters : ");
     this.characters.forEach((character) => character.dump());
 
@@ -131,7 +136,7 @@ export class Node {
     }
   }
 
-  computeScoreInspector = () => {
+  computeScoreInspector() {
     let seen = 0;
     let unseen = 0;
 
@@ -150,7 +155,7 @@ export class Node {
     return Math.abs(seen - unseen);
   }
 
-  countPeopleInRoom = (position) => {
+  countPeopleInRoom(position) {
     var count = 0;
 
     this.characters.forEach((character) => {
@@ -162,7 +167,7 @@ export class Node {
     return count;
   }
 
-  computeScoreGhost = (ghost_color) => {
+  computeScoreGhost(ghost_color) {
     let ghost = this.characters[ghost_color.value];
     let seen = 0;
     let unseen = 0;
@@ -195,9 +200,9 @@ export class Node {
     return unseen - seen + 1;
   }
 
-  generateDirectChild = (depth = 0, max_depth = 2) => {
-    for (let char in Object.keys(Color)) {
-      if (char !== Color.NONE) {
+  generateDirectChild(depth = 0, max_depth = 2) {
+    for (let char in Object.keys(Character.Color())) {
+      if (char !== Character.Color().NONE) {
         break;
       }
 
@@ -219,7 +224,7 @@ export class Node {
         tmp.playLevel = PlayLevel.getNextMove(this.playLevel);
         tmp.ghostColor = this.ghostColor;
 
-        if (this.ghostColor !== Color.NONE) {
+        if (this.ghostColor !== Character.Color().NONE) {
           tmp.heuristic = tmp.computeScoreGhost(tmp.ghostColor);
         } else {
           tmp.heuristic = tmp.computeScoreInspector();
@@ -235,7 +240,7 @@ export class Node {
     }
   }
 
-  createChildNode = () => {
+  createChildNode() {
     let tmp = new Node();
     tmp.parent = this;
 
@@ -243,7 +248,7 @@ export class Node {
       tmp.characters[index] = new Character(character.color, character.position, character.suspect)
     });
 
-    tmp.playedCharacter = Color.NONE;
+    tmp.playedCharacter = Character.Color().NONE;
     tmp.lightOff = this.lightOff;
     tmp.lock = this.lock;
     tmp.playLevel = PlayLevel.getNextMove(this.playLevel);
@@ -252,8 +257,8 @@ export class Node {
     return tmp;
   }
 
-  setTmpNodeHeuristique = (tmp) => {
-    if (this.ghostColor !== Color.NONE) {
+  setTmpNodeHeuristique(tmp) {
+    if (this.ghostColor !== Character.Color().NONE) {
       tmp.heuristic = tmp.computeScoreGhost(tmp.ghostColor);
     } else {
       tmp.heuristic = tmp.computeScoreInspector();
@@ -262,21 +267,21 @@ export class Node {
     return tmp;
   }
 
-  generateDirectChildPower = (depth = 0, max_depth = 0) => {
-    for (let char in Object.keys(Color)) {
-      if (char !== Color.NONE) {
+  generateDirectChildPower(depth = 0, max_depth = 0) {
+    for (let char in Object.keys(Character.Color())) {
+      if (char !== Character.Color().NONE) {
         break;
       }
 
       let rooms;
-      if (char === Color.PINK) {
+      if (char === Character.Color().PINK) {
         rooms = this.board.getLinkForRoom(this.characters[char].position, true);
       } else {
         rooms = this.board.getLinkForRoom(this.characters[char].position, false);
       }
 
       rooms.forEach((room, index) => {
-        if (char === Color.BLUE) {
+        if (char === Character.Color().BLUE) {
           for (let lock_room = 0; lock_room < 10; lock_room++) {
             let tmp = this.createChildNode();
             tmp.playedCharacter = char;
@@ -288,7 +293,7 @@ export class Node {
             }
             this.child.append(tmp);
           }
-        } else if (char === Color.GREY) {
+        } else if (char === Character.Color().GREY) {
           for (let lock_room = 0; lock_room < 10; lock_room++) {
             let tmp = this.createChildNode();
             tmp.playedCharacter = char;
@@ -300,7 +305,7 @@ export class Node {
             }
             this.child.append(tmp);
           }
-        } else if (char === Color.PURPLE) {
+        } else if (char === Character.Color().PURPLE) {
             let tmp = this.createChildNode();
             tmp.setPosition(char, room);
             tmp = this.setTmpNodeHeuristique(tmp);
@@ -308,8 +313,8 @@ export class Node {
               tmp.generateDirectChildPower(depth + 1);
             }
             this.child.append(tmp);
-            for (let swap_char in Object.keys(Color)) {
-              if (char !== Color.PURPLE) {
+            for (let swap_char in Object.keys(Character.Color())) {
+              if (char !== Character.Color().PURPLE) {
                 break;
               }
 
@@ -324,7 +329,7 @@ export class Node {
               }
               this.child.append(tmp_power);
             }
-        } else if (char === Color.BROWN) {
+        } else if (char === Character.Color().BROWN) {
           let tmp = this.createChildNode();
           tmp.playedCharacter = char;
           tmp.setPosition(char, room);
@@ -333,8 +338,8 @@ export class Node {
             tmp.generateDirectChildPower(depth + 1);
           }
           this.child.append(tmp);
-          for (let swap_char in Object.keys(Color)) {
-            if (char !== Color.BROWN || this.characters[swap_char].position === this.characters[char].position) {
+          for (let swap_char in Object.keys(Character.Color())) {
+            if (char !== Character.Color().BROWN || this.characters[swap_char].position === this.characters[char].position) {
               break;
             }
 
@@ -362,35 +367,46 @@ export class Node {
     }
   }
 
-  setPosition = (to_move, new_position) => {
+  setPosition(to_move, new_position) {
     this.characters[to_move].position = new_position;
   }
 
-  setCharacter = (characters) => {
+  setCharacter(characters) {
     this.characters = characters;
   }
 
-  setLightOff = (light) => this.lightOff = light;
+  setLightOff(light) {
+    return this.lightOff = light;
+  }
 
-  setLock = (lock) => {
+  setLock(lock) {
     this.lock = lock;
     this.board.lockPath(this.lock[0], this.lock[1])
   }
 
-  getLightOff = (self) =>  this.lightOff;
+  getLightOff() {
+    return this.lightOff;
+  }
 
-  getLock = () => this.lock;
+  getLock() {
+    return this.lock;
+  }
 
-  setParent = (parent) => {
+  setParent(parent) {
     this.parent = parent
   }
 
-  getParent = () =>  this.parent;
+  getParent() {
+    return this.parent;
+  }
 
-  addChildren = (child) => {
+  addChildren(child) {
     this.child.append(child)
   }
 
-  getCharacters = () => this.characters
-
+  getCharacters() {
+    return this.characters
+  }
 }
+
+module.exports.Node = Node;

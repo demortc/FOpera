@@ -19,6 +19,12 @@ const State = {
   smallStars:15 // ****
 }
 
+const QuestionType = {
+  POWER: /^Voulez-vous activer le pouvoir/,
+  POSITION: /^positions disponibles : /,
+  TUILES: /^Tuiles disponibles :/
+}
+
 class Parser {
   constructor (playerId) {
     this.playerId = playerId;
@@ -54,13 +60,13 @@ class Parser {
         reg: /^([a-z]+-[0-9]-(suspect|clean)(  |)){8}/,
         act: (line) => this.initCharacters(line),
       },
-      questionPower: {
-        reg: /^QUESTION : Voulez-vous activer le pouvoir \(0\/1\) \?$/,
-        act: () => {},
-      },
+      // questionPower: {
+      //   reg: /^QUESTION : Voulez-vous activer le pouvoir \(0\/1\) \?$/,
+      //   act: () => {},
+      // },
       question: {
         reg: /QUESTION :./,
-        act:() => {}
+        act:(line) => this.decodeQuestion(line)
       },
       answerGiven: {
         reg: /REPONSE DONNEE./,
@@ -88,11 +94,11 @@ class Parser {
       },
       inspectorTurn: {
         reg: /^  Tour de l\'inspecteur/,
-        act: () => this.isGhostTurn = false,
+        act: () => { this.isGhostTurn = false; return undefined;},
       },
       ghostTurn: {
         reg: /  Tour de le fantome/,
-        act:() => this.isGhostTurn = true,
+        act:() => { this.isGhostTurn = true; return undefined;},
       },
       ghostCharacter: {
         reg: /[!]{3}./,
@@ -105,12 +111,12 @@ class Parser {
     }
   }
 
-  parseData(line) {
+  parseData(line, cb) {
     const content = line.split('\n');
     for (let c of content) {
       for (let key in this.RegToAction()) {
         if (c.search(this.RegToAction()[key].reg) !== -1){
-          this.RegToAction()[key].act(c);
+          cb(this.RegToAction()[key].act(c));
         }
       }  
     }
@@ -127,6 +133,36 @@ class Parser {
       }  
     } catch (e) {
       console.log(e + ' in line ' + line)
+    }
+  }
+
+  decodeQuestion(line) {
+    try {
+      const question = line.split('QUESTION :')[1].trim();
+      const obj = {
+        values: [],
+        type: ''
+      };
+
+      if (question.match(QuestionType.POSITION)) {
+        obj.type = 'POSITION';
+        const start = question.indexOf('{');
+        const end = question.indexOf('}');
+        const v = question.substr(start+1, end - start -1).split(',');
+        v.forEach((val) => obj.values.push(Number(val)));
+
+      } else if (question.match(QuestionType.POWER)) {
+        obj.type = 'POWER';
+        obj.values = [0, 1];
+
+      } else if (question.match(QuestionType.TUILES)) {
+        obj.type = 'TUILES';
+        const max = Number(question.charAt(question.length - 1));
+        obj.values = Array.apply(null, {length: max + 1}).map(Number.call, Number)
+      }
+      return obj
+    } catch (e) {
+      console.log(e, ' in line ', line)
     }
   }
 

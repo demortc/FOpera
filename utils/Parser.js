@@ -106,15 +106,28 @@ class Parser {
   }
 
   parseData(line) {
-    for (let key in this.RegToAction()) {
-      if (line.search(this.RegToAction()[key].reg)){
-        this.RegToAction()[key].act(line);
-      }
+    const content = line.split('\n');
+    for (let c of content) {
+      for (let key in this.RegToAction()) {
+        if (c.search(this.RegToAction()[key].reg) !== -1){
+          this.RegToAction()[key].act(c);
+        }
+      }  
     }
   }
 
   initCharacters(line) {
-    console.log("INIT POS", line)
+    try {
+      const raw = line.split('  ');
+      for (let r of raw) {
+          const rawState = r.split('-');
+          const rawIndex = CharactersString.indexOf(rawState[0]);
+          this.characters[rawIndex]._position = Number(rawState[1])
+          this.characters[rawIndex]._suspect = rawState[2] === 'suspect' ? true: false;
+      }  
+    } catch (e) {
+      console.log(e + ' in line ' + line)
+    }
   }
 
   parseGhostColor(line) {

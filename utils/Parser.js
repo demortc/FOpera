@@ -18,6 +18,7 @@ const State = {
   ghostCharacter:14, // !!! le fantôme est : [couleur]
   smallStars:15 // ****
 }
+module.exports.State = State;
 
 const QuestionType = {
   POWER: /^Voulez-vous activer le pouvoir/,
@@ -30,9 +31,10 @@ class Parser {
 
     this.playerId = playerId;
     this.state = State.unknow;
-    this.ghostColor = Character.Color().NONE,
-    this.isGhostTurn = false,
-    this.lastPlayedCharacter = undefined,
+    this.ghostColor = Character.Color().NONE;
+    this.isGhostTurn = false;
+    this.lastPlayedCharacter = undefined;
+    this.init = false;
     this.characters = [
       new Character(Character.Color().RED, 0, true),
       new Character(Character.Color().PINK, 0, true),
@@ -42,24 +44,27 @@ class Parser {
       new Character(Character.Color().BROWN, 0, true),
       new Character(Character.Color().BLACK, 0, true),
       new Character(Character.Color().WHITE, 0, true),
-    ],
-    this.lock = [undefined, undefined],
+    ];
+    this.lock = [undefined, undefined];
     this.light = 0;
   }
 
   RegToAction() {
     return {
-      // stars: {
-      //   reg: /[*]{26}/,
-      //   act: () => {}
-      // },
+      stars: {
+        reg: /[*]{26}/,
+        act: () => {},
+        state: State.stars,
+      },
       worldInfo: {
         reg: /Tour:./,
         act:(line) => this.initWorldInfo(line),
+        state: State.worldInfo,
       },
       characterPos: {
         reg: /^([a-z]+-[0-9]-(suspect|clean)(  |)){8}/,
         act: (line) => this.initCharacters(line),
+        state: State.characterPos,
       },
       // questionPower: {
       //   reg: /^QUESTION : Voulez-vous activer le pouvoir \(0\/1\) \?$/,
@@ -67,48 +72,59 @@ class Parser {
       // },
       question: {
         reg: /QUESTION :./,
-        act:(line) => this.decodeQuestion(line)
+        act:(line) => this.decodeQuestion(line),
+        state: State.question,
       },
       answerGiven: {
         reg: /REPONSE DONNEE./,
         act:() => {},
+        state: State.answerGiven,
       },
       answerUnderstood: {
         reg: /REPONSE INTERPRETEE./,
         act:() => {},
+        state: State.answerUnderstood,
       },
       character_played: {
         reg: /l(e fantome|\'inspecteur) joue/,
         act:() => {},
+        state: State.characterPlayed,
       },
       powerPlayed: {
         reg: /Pouvoir de [a-z]+ activé/,
         act:() => {},
+        state: State.powerPlayed,
       },
       ghostState: {
         reg: /(le fantome frappe|pas de cri)/,
         act:() => {},
+        state: State.ghostState,
       },
       newPlacement: {
         reg: /NOUVEAU PLACEMENT : [a-z]+-[0-9]-(suspect|clean)/,
         act: (line) => this.parseNewPosition(line),
+        state: State.newPlacement,
       },
       inspectorTurn: {
         reg: /^  Tour de l\'inspecteur/,
         act: () => { this.isGhostTurn = false; return undefined;},
+        state: State.inspectorTurn,
       },
       ghostTurn: {
         reg: /  Tour de le fantome/,
         act:() => { this.isGhostTurn = true; return undefined;},
+        state: State.ghostTurn,
       },
       ghostCharacter: {
         reg: /[!]{3}./,
-        act:(line) => this.parseGhostColor(line)
+        act:(line) => this.parseGhostColor(line),
+        state: State.ghostCharacter,
       },
-      // smallStars: {
-      //   reg: /[*]{4}/,
-      //   act: () => {},
-      // }  
+      smallStars: {
+        reg: /[*]{4}/,
+        act: () => this.init = true,
+        state: State.smallStars
+      }  
     }
   }
 
@@ -117,6 +133,7 @@ class Parser {
     for (let c of content) {
       for (let key in this.RegToAction()) {
         if (c.search(this.RegToAction()[key].reg) !== -1){
+          this.state = this.RegToAction()[key].state;
           cb(this.RegToAction()[key].act(c));
         }
       }  
@@ -129,8 +146,8 @@ class Parser {
       for (let r of raw) {
           const rawState = r.split('-');
           const rawIndex = CharactersString.indexOf(rawState[0]);
-          this.characters[rawIndex]._position = Number(rawState[1])
-          this.characters[rawIndex]._suspect = rawState[2] === 'suspect' ? true: false;
+          this.characters[rawIndex].position = Number(rawState[1])
+          this.characters[rawIndex].suspect = rawState[2] === 'suspect' ? true: false;
       }  
     } catch (e) {
       console.log(e + ' in line ' + line)
@@ -201,6 +218,8 @@ class Parser {
       console.log(e + ' in line ' + line)
     }
   }
+
+
 }
 
-module.exports = Parser;
+module.exports.Parser = Parser;

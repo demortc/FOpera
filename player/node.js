@@ -168,7 +168,7 @@ class Node {
   }
 
   computeScoreGhost(ghost_color) {
-    let ghost = this.characters[ghost_color.value];
+    let ghost = this.characters[ghost_color];
     let seen = 0;
     let unseen = 0;
     let ghostSeen = false;

@@ -1,5 +1,5 @@
 const { Node, PlayLevelId } = require('./node');
-const character = require('./Character');
+const { Character } = require('./Character');
 
 class Tree {
   constructor() {
@@ -60,7 +60,7 @@ class Tree {
 
   goToAdverseMove(characterMoved) {
     for (let child of this._actual.child) {
-      if (child.characters[characterMoved.color.value].position === characterMoved.position) {
+      if (child.characters[characterMoved.color].position === characterMoved.position) {
         this._actual = child;
         break;
       }
@@ -115,10 +115,10 @@ class Tree {
     }
 
     for (let char of characters) {
-      targetNode.characters[char.color.value].suspect = char.suspect;
+      targetNode.characters[char.color].suspect = char.suspect;
       targetNode.lock = lock;
       targetNode.lightOff = light;
-      if (targetNode.ghostColor !== character.Color.NONE) {
+      if (targetNode.ghostColor !== Character.Color().NONE) {
         targetNode.heuristic = targetNode.computeScoreGhost(targetNode.ghostColor)
       } else {
         targetNode.heuristic = targetNode.computeScoreInspector();

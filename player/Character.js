@@ -27,9 +27,9 @@ module.exports.CharactersString = CharactersString;
 
 class Character {
   constructor(_color, _position, _suspect) {
-    this._color = _color;
-    this._position = _position;
-    this._suspect = _suspect;
+    this.color = _color;
+    this.position = _position;
+    this.suspect = _suspect;
   }
 
   static Color() {
@@ -47,7 +47,7 @@ class Character {
   }
 
   dump() {
-    console.log(" ", this._color,", position: ",this._position,", suspect: ", this._suspect)
+    console.log(" ", this.color,", position: ",this.position,", suspect: ", this.suspect)
   }
 
   get_character_color_to_string() {
@@ -68,5 +68,6 @@ class Character {
     return conversion.find(c => c[1] === tileColor)[0];
   }
 };
+
 
 module.exports.Character = Character;

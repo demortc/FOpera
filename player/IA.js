@@ -5,7 +5,7 @@ const net = require('net');
 const struct = require('python-struct');
 const Tree = require("./tree");
 const rl = require('readline');
-const Parser = require('../utils/Parser');
+const {Parser, State} = require('../utils/Parser');
 
 
 class IA {
@@ -51,10 +51,33 @@ class IA {
         }
 
         elements.forEach((elem) => {
-          console.log(elem.content);
           this.parser.parseData(elem.content, (value) => {
+            console.log(this.tree.root.characters)
             if (value) {
               this.respond(this.calculatAnswer(value));
+            } else {
+
+              if (this.parser.state === State.worldInfo) {
+                if (this.parser.init) {
+                  this.tree.updateWorldInfo(this.parser.lock, this.parser.light)    
+                }
+                this.tree.root.lightOff = this.parser.light;
+                this.tree.root.lock = this.parser.lock;
+              }
+              if (this.parser.state === State.characterPos) {
+                if (this.parser.init) {
+                  this.tree.updateSuspectWorld(this.parser.characters);
+                } else {
+                  this.tree.root.characters = this.parser.characters;
+                }
+              }
+              if (this.parser.state === State.ghostCharacter) {
+                this.tree.root.ghostColor = this.parser.ghostColor;
+              }
+              if (this.parser.state === State.newPlacement) {
+                this.tree.goToAdverseMove(this.parser.lastPlayedCharacter);
+              }
+              
             }
           });
         })

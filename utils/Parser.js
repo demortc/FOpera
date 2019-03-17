@@ -27,20 +27,21 @@ const QuestionType = {
 
 class Parser {
   constructor (playerId) {
+
     this.playerId = playerId;
     this.state = State.unknow;
-    this.ghostColor = Character.Color.NONE,
+    this.ghostColor = Character.Color().NONE,
     this.isGhostTurn = false,
     this.lastPlayedCharacter = undefined,
     this.characters = [
-      new Character(Character.Color.RED, 0, true),
-      new Character(Character.Color.PINK, 0, true),
-      new Character(Character.Color.GREY, 0, true),
-      new Character(Character.Color.BLUE, 0, true),
-      new Character(Character.Color.PURPLE, 0, true),
-      new Character(Character.Color.BROWN, 0, true),
-      new Character(Character.Color.BLACK, 0, true),
-      new Character(Character.Color.WHITE, 0, true),
+      new Character(Character.Color().RED, 0, true),
+      new Character(Character.Color().PINK, 0, true),
+      new Character(Character.Color().GREY, 0, true),
+      new Character(Character.Color().BLUE, 0, true),
+      new Character(Character.Color().PURPLE, 0, true),
+      new Character(Character.Color().BROWN, 0, true),
+      new Character(Character.Color().BLACK, 0, true),
+      new Character(Character.Color().WHITE, 0, true),
     ],
     this.lock = [undefined, undefined],
     this.light = 0;

@@ -26,11 +26,9 @@ def informer(texte):
 
 def demander(q,j):
     informer("QUESTION : "+ q)
-    print("QUESTION : " + q)
     protocol.send_one_message(clients[j.numero], messages.Question(q).toJson())
     r = protocol.recv_one_message(clients[j.numero])
     r = messages.deserialize(r)
-    print("REPONSE DONNEE : " + str(r.content))
     informer("REPONSE DONNEE : " + str(r.content))
     return str(r.content)
 

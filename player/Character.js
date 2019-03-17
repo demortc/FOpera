@@ -13,18 +13,6 @@ const CharactersString = [
 
 module.exports.CharactersString = CharactersString;
 
-// const Color = {
-//   RED:0,
-//   PINK:1,
-//   GREY:2,
-//   BLUE:3,
-//   PURPLE:4,
-//   BROWN:5,
-//   BLACK:6,
-//   WHITE:7,
-//   NONE:8,
-// }
-
 class Character {
   constructor(_color, _position, _suspect) {
     this.color = _color;

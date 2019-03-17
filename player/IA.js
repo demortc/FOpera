@@ -2,9 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 
 const net = require('net');
-const struct = require('python-struct');
 const Tree = require("./tree");
-const rl = require('readline');
 const {Parser, State} = require('../utils/Parser');
 
 
@@ -19,8 +17,6 @@ class IA {
     this.tree = new Tree();
     this.tree.generate();
     this.parser = new Parser(playerId);
-    this.init = false;
-    this.oldAsk = "";
   }
 
   listen() {
@@ -51,8 +47,8 @@ class IA {
         }
 
         elements.forEach((elem) => {
+          console.log(elem.content);
           this.parser.parseData(elem.content, (value) => {
-            console.log(this.tree.root.characters)
             if (value) {
               this.respond(this.calculatAnswer(value));
             } else {
@@ -102,7 +98,6 @@ class IA {
   }
 
   respond(str) {
-    console.log("Response: " + str)
     const response = JSON.stringify({type: 'Response', content: str});
     const lenght = Buffer.allocUnsafe(4);
     lenght.writeInt32BE(response.length);

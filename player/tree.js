@@ -8,14 +8,6 @@ class Tree {
     this.root.playLevel = PlayLevelId.GHOST;
   }
 
-  initiateRoot(characters, lock, light) {
-    this.root.setCharacter(characters);
-    this.root.setLock(lock);
-    this.root.depth = 0;
-    this.root.setLightOff(light);
-    this.root.playLevel = PlayLevelId.GHOST;
-  }
-
   parent() {
     if (this._actual !== this.root) {
       this._actual = this._actual.parent
@@ -26,36 +18,11 @@ class Tree {
     return this._actual.generateDirectChildPower(0, 0);
   }
 
-  generateDeeper() {
-    if (this._actual.child === undefined || this._actual.child.length === 0) {
-      this.generate();
-    } else {
-      for (let child of this._actual.child) {
-        child.generateDirectChildPower(0, 0);
-      }
-    }
-  }
-
-  getActual() {
-    return this._actual;
-  }
 
   getActualPos() {
     if (this._actual.playedCharacter) {
       return this._actual.characters[this._actual.playedCharacter].position;
     }
-  }
-
-  getChilds() {
-    return this._actual.child;
-  }
-
-  getTurn() {
-    return this._actual.playLevel;
-  }
-
-  goToChild() {
-    return this._actual = child;
   }
 
   goToAdverseMove(characterMoved) {
@@ -78,17 +45,6 @@ class Tree {
     }
     this._actual = bestChild;
     return allowedColors.indexOf(this._actual.playedCharacter);
-  }
-
-  getGenerateDepth() {
-    let tmp = this._actual;
-    let depth = 0;
-    while (tmp.child.length > 0) {
-      depth += 1;
-      tmp = tmp.child[0];
-    }
-
-    return depth;
   }
 
   print(layer) {

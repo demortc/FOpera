@@ -52,14 +52,6 @@ class PlayLevel {
 
     return false;
   }
-
-  static isAdverseMove(jid, level) {
-    if ((jid === 0 && PlayLevel.isGhostTurn(level)) || (jid === 1 && PlayLevel.isInspectorTurn(level))) {
-      return true;
-    }
-
-    return false;
-  }
 }
 
 module.exports.PlayLevel = PlayLevel;
@@ -280,7 +272,7 @@ class Node {
         rooms = this.board.getLinkForRoom(this.characters[char].position, false);
       }
 
-      rooms.forEach((room, index) => {
+      rooms.forEach((room) => {
         if (char === Character.Color().BLUE) {
           for (let lock_room = 0; lock_room < 10; lock_room++) {
             let tmp = this.createChildNode();
@@ -369,43 +361,6 @@ class Node {
 
   setPosition(to_move, new_position) {
     this.characters[to_move].position = new_position;
-  }
-
-  setCharacter(characters) {
-    this.characters = characters;
-  }
-
-  setLightOff(light) {
-    return this.lightOff = light;
-  }
-
-  setLock(lock) {
-    this.lock = lock;
-    this.board.lockPath(this.lock[0], this.lock[1])
-  }
-
-  getLightOff() {
-    return this.lightOff;
-  }
-
-  getLock() {
-    return this.lock;
-  }
-
-  setParent(parent) {
-    this.parent = parent
-  }
-
-  getParent() {
-    return this.parent;
-  }
-
-  addChildren(child) {
-    this.child.append(child)
-  }
-
-  getCharacters() {
-    return this.characters
   }
 }
 

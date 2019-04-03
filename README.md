@@ -31,4 +31,6 @@ Nous utilisons notre propre parser et non celui qui nous à été fournis. On s'
 
 Il ce peux que lors de l'éxécution de l'ia, une erreur fasse échoué l'éxécution. (Dans ce cas ne pas hésité à relancer le serveur puis l'ia)
 
-Après de multiple phases de test et au bout de 999 parties, nous obtenons généralement un WinRate d'une moyenne de 40 % 
+Après de multiple phases de test et au bout de 999 parties, nous obtenons généralement un WinRate d'une moyenne de 40 %
+
+Afin de réaliser notre Ia nous avons choisi de créer un arbre de décision qui permet dévaluer chaque coups possible afin de revoyer le meilleur choix.

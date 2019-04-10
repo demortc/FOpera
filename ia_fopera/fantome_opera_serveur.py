@@ -184,6 +184,8 @@ class partie:
             self.tour()
         informer("L'enquêteur a trouvé - c'était " + str(self.fantome) if self.start < self.end else "Le fantôme a gagné")
         informer("Score final : "+str(self.end-self.start))
+        print("L'enquêteur a trouvé - c'était " + str(self.fantome) if self.start < self.end else "Le fantôme a gagné")
+        print("Score final : "+str(self.end-self.start))
         return self.end - self.start
     def __repr__(self):
         return "Tour:" + str(self.num_tour) + ", Score:"+str(self.start)+"/"+str(self.end) + ", Ombre:" + str(self.shadow) + ", Bloque:" + str(self.bloque) +"\n" + "  ".join([str(p) for p in self.personnages])
